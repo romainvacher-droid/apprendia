@@ -1,6 +1,7 @@
 @AGENTS.md
 
 # IA Academy Hub — Guide agent
+<!-- prod: https://ai-academy-hub.vercel.app -->
 
 ## Stack
 - Next.js 16 + TypeScript + Tailwind CSS
