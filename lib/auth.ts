@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
         if (!user) return null;
         const valid = await bcrypt.compare(credentials.password, user.password_hash);
         if (!valid) return null;
-        return { id: String(user.id), email: user.email, name: user.name, isPremium: user.is_premium };
+        return { id: String(user.id), email: user.email, name: user.name };
       },
     }),
   ],
@@ -26,16 +26,15 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.isPremium = (user as { isPremium?: boolean }).isPremium ?? false;
-      }
+      if (user) token.id = user.id;
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        (session.user as { id?: string; isPremium?: boolean }).id = token.id as string;
-        (session.user as { id?: string; isPremium?: boolean }).isPremium = token.isPremium as boolean;
+      if (session.user && token.id) {
+        (session.user as { id?: string }).id = token.id as string;
+        // Toujours relire is_premium depuis la DB — le JWT peut être stale
+        const rows = await sql`SELECT is_premium FROM users WHERE id = ${token.id} LIMIT 1`;
+        (session.user as { isPremium?: boolean }).isPremium = rows[0]?.is_premium ?? false;
       }
       return session;
     },
