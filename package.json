@@ -10,11 +10,16 @@
   },
   "dependencies": {
     "next": "16.2.3",
+    "next-auth": "^4.24.11",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "stripe": "^17.7.0",
+    "@neondatabase/serverless": "^0.10.4",
+    "bcryptjs": "^3.0.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
