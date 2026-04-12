@@ -50,21 +50,64 @@ git commit -m "content: add/update formation XYZ"
 git push origin main
 ```
 
-## Tâche planifiée — ajout automatique de formations
+## Contenu pédagogique des formations
+
+Le contenu (sections, quiz) est stocké séparément des métadonnées :
+- **Métadonnées** → `lib/courses.ts` (titre, niveau, durée, etc.)
+- **Contenu pédagogique** → `content/courses/{id}.json` (sections, quiz)
+
+Quand un utilisateur ouvre `/formations/{id}` :
+- Si `content/courses/{id}.json` existe → affiche le contenu
+- Sinon → affiche "En cours de génération"
+
+Format d'un fichier de contenu :
+```json
+{
+  "id": 1,
+  "sections": [
+    { "title": "...", "content": "...", "key_points": ["...", "..."] }
+  ],
+  "quiz": [
+    { "question": "...", "choices": ["A...", "B...", "C...", "D..."], "answer": "A", "explanation": "..." }
+  ],
+  "word_count": 3200,
+  "generated_at": "2026-04-12T..."
+}
+```
+
+## Tâche planifiée + pipeline de génération de contenu
 
 **Script :** `scripts/content_manager.py`
 **Cron :** `17 1 * * *` (01h17 chaque nuit)
-**Comportement :** Lit le catalogue actuel, demande à un LLM (Groq llama-3.3-70b) de proposer 2 nouvelles formations complémentaires, les ajoute dans `lib/courses.ts`, commit et push → Vercel redéploie automatiquement.
+**LLM :** Groq llama-3.3-70b-versatile (fallback OpenRouter)
+
+**Pipeline itératif pour chaque formation :**
+1. Génère un plan structuré (sections avec points clés)
+2. Génère chaque section avec le contexte des précédentes (garantit cohérence)
+3. Génère un quiz de validation (3 QCM)
+4. Sauvegarde `content/courses/{id}.json`
+5. Commit + push → Vercel redéploie (~1 min)
 
 ```bash
-# Lancer manuellement
-python3 scripts/content_manager.py          # cycle complet
-python3 scripts/content_manager.py audit    # voir le catalogue sans modifier
-python3 scripts/content_manager.py status   # résumé rapide
+# Commandes disponibles sur le serveur
+python3 scripts/content_manager.py                   # cycle nuit complet
+python3 scripts/content_manager.py generate <id>     # génère le contenu d'une formation
+python3 scripts/content_manager.py generate-all      # génère tout le contenu manquant
+python3 scripts/content_manager.py audit             # catalogue avec état du contenu
+python3 scripts/content_manager.py status            # résumé rapide
+
+# Exemples
+python3 scripts/content_manager.py generate 4       # génère le contenu de la formation id=4
+python3 scripts/content_manager.py generate-all     # rattrape toutes les formations sans contenu
 
 # Vérifier le cron
 crontab -l | grep content_manager
 ```
+
+**Cycle nuit automatique :**
+1. Propose 2 nouvelles formations → les ajoute dans `lib/courses.ts`
+2. Génère le contenu de toutes les formations qui n'en ont pas encore
+3. Commit + push → Vercel déploie → notification Telegram
 
 ## Schéma base de données
 
@@ -113,27 +156,31 @@ npx vercel env pull .env.local --yes   # récupère toutes les variables depuis 
 
 ```
 lib/
-  courses.ts          ← CATALOGUE (éditer ici pour ajouter/modifier des formations)
-  auth.ts             ← config NextAuth (credentials email/password)
-  db.ts               ← client Neon PostgreSQL
+  courses.ts               ← CATALOGUE (éditer ici pour ajouter/modifier des formations)
+  auth.ts                  ← config NextAuth (credentials email/password)
+  db.ts                    ← client Neon PostgreSQL
+content/
+  courses/{id}.json        ← CONTENU PÉDAGOGIQUE (généré par content_manager.py)
 app/
-  page.tsx            ← accueil (vitrine, formations en vedette)
-  formations/page.tsx ← catalogue complet (lit lib/courses.ts)
-  login/page.tsx      ← connexion NextAuth
-  register/page.tsx   ← inscription
-  account/page.tsx    ← gestion abonnement Stripe
-  layout.tsx          ← layout global avec SessionProvider
+  page.tsx                 ← accueil (vitrine, formations en vedette)
+  formations/
+    page.tsx               ← catalogue complet (lit lib/courses.ts)
+    [id]/page.tsx          ← détail formation (lit content/courses/{id}.json)
+  login/page.tsx           ← connexion NextAuth
+  register/page.tsx        ← inscription
+  account/page.tsx         ← gestion abonnement Stripe
+  layout.tsx               ← layout global avec SessionProvider
   components/
-    Navbar.tsx        ← barre de navigation avec état auth
-    Providers.tsx     ← wrapper SessionProvider
+    Navbar.tsx             ← barre de navigation avec état auth
+    Providers.tsx          ← wrapper SessionProvider
   api/
-    auth/[...nextauth]/   ← handler NextAuth
-    auth/register/        ← POST inscription (crée user en BDD)
-    stripe/checkout/      ← POST → URL Stripe Checkout
-    stripe/portal/        ← POST → URL portail Stripe (gestion abonnement)
-    stripe/webhook/       ← POST webhook Stripe (met à jour is_premium)
+    auth/[...nextauth]/    ← handler NextAuth
+    auth/register/         ← POST inscription (crée user en BDD)
+    stripe/checkout/       ← POST → URL Stripe Checkout
+    stripe/portal/         ← POST → URL portail Stripe (gestion abonnement)
+    stripe/webhook/        ← POST webhook Stripe (met à jour is_premium)
 scripts/
-  content_manager.py  ← agent nightly (ajoute des formations dans lib/courses.ts)
+  content_manager.py       ← pipeline nightly : nouvelles formations + génération contenu
 ```
 
 ## Tester Stripe en mode test
