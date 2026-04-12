@@ -67,6 +67,9 @@ export default function Home() {
           <a href="/formations" className="bg-indigo-600 text-white px-8 py-3.5 rounded-full text-base font-medium hover:bg-indigo-700 transition-colors">
             Voir toutes les formations
           </a>
+          <a href="/dashboard" className="border border-indigo-200 text-indigo-600 px-8 py-3.5 rounded-full text-base font-medium hover:bg-indigo-50 transition-colors">
+            📊 Mon parcours
+          </a>
           <a href="#niveaux" className="border border-gray-200 text-gray-700 px-8 py-3.5 rounded-full text-base font-medium hover:bg-gray-50 transition-colors">
             Choisir mon niveau
           </a>
