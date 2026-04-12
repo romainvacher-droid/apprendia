@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { COURSES } from "@/lib/courses";
-import { sql } from "@/lib/db";
+import { getUserProgress } from "@/lib/progress";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -11,16 +11,14 @@ export default async function DashboardPage() {
 
   const userId = Number((session.user as { id?: string }).id);
 
-  const [visited, quizzes] = await Promise.all([
-    sql`SELECT course_id, visited_at FROM course_progress WHERE user_id = ${userId} ORDER BY visited_at DESC`,
-    sql`SELECT course_id, score, total, completed_at FROM quiz_results WHERE user_id = ${userId} ORDER BY completed_at DESC`,
-  ]);
+  const { visited, quizzes } = await getUserProgress(userId);
 
-  const visitedIds = new Set((visited as { course_id: number }[]).map((r) => r.course_id));
+  const visitedIds = new Set(visited.map((r) => r.course_id));
 
   // Dernier résultat de quiz par cours
-  const bestQuiz: Record<number, { score: number; total: number; completed_at: string }> = {};
-  for (const r of quizzes as { course_id: number; score: number; total: number; completed_at: string }[]) {
+  type QuizEntry = { course_id: number; score: number; total: number; completed_at: string };
+  const bestQuiz: Record<number, QuizEntry> = {};
+  for (const r of quizzes as QuizEntry[]) {
     if (!bestQuiz[r.course_id] || r.score > bestQuiz[r.course_id].score) {
       bestQuiz[r.course_id] = r;
     }
@@ -117,9 +115,7 @@ export default async function DashboardPage() {
             Historique des quiz
           </h2>
           <div className="space-y-2">
-            {(quizzes as { course_id: number; score: number; total: number; completed_at: string }[])
-              .slice(0, 10)
-              .map((r, i) => {
+            {quizzes.slice(0, 10).map((r, i) => {
                 const course = COURSES.find((c) => c.id === r.course_id);
                 const pct = Math.round((r.score / r.total) * 100);
                 return (

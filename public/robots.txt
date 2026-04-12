@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /account
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+
+Sitemap: https://apprendia.vercel.app/sitemap.xml

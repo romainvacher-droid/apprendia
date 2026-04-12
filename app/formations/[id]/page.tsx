@@ -3,9 +3,11 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import fs from "fs";
 import path from "path";
+import type { Metadata } from "next";
 import { authOptions } from "@/lib/auth";
 import { COURSES, LEVEL_COLORS } from "@/lib/courses";
 import QuizBlock from "./QuizBlock";
+import TrackProgress from "./TrackProgress";
 
 interface Section {
   title: string;
@@ -31,6 +33,31 @@ function getCourseContent(id: number): CourseContent | null {
   const p = path.join(process.cwd(), "content", "courses", `${id}.json`);
   if (!fs.existsSync(p)) return null;
   return JSON.parse(fs.readFileSync(p, "utf-8"));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const course = COURSES.find((c) => c.id === parseInt(id, 10));
+  if (!course) return {};
+  return {
+    title: `${course.title} — Apprendia`,
+    description: course.desc,
+    openGraph: {
+      title: `${course.title} — Formation IA`,
+      description: course.desc,
+      url: `https://apprendia.vercel.app/formations/${course.id}`,
+      type: "article",
+    },
+    twitter: {
+      card: "summary",
+      title: course.title,
+      description: course.desc,
+    },
+  };
 }
 
 export async function generateStaticParams() {
@@ -60,21 +87,13 @@ export default async function FormationPage({
 
   const content = getCourseContent(courseId);
 
-  // Tracker la visite si connecté
-  if (session) {
-    const userId = Number((session.user as { id?: string }).id);
-    if (userId) {
-      const { sql } = await import("@/lib/db");
-      await sql`
-        INSERT INTO course_progress (user_id, course_id)
-        VALUES (${userId}, ${courseId})
-        ON CONFLICT (user_id, course_id) DO NOTHING
-      `.catch(() => {});
-    }
-  }
+  // Le tracking de visite est géré côté client par <TrackProgress>
+  // (évite les effets de bord dans un Server Component)
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-12">
+      {/* Tracking visite côté client — sans effet de bord dans le Server Component */}
+      <TrackProgress courseId={courseId} />
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-400 mb-8">
         <Link href="/formations" className="hover:text-gray-600 transition-colors">

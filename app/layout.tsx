@@ -9,6 +9,20 @@ const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Apprendia — Formations IA tous niveaux",
   description: "Apprenez l'intelligence artificielle de zéro à expert avec Apprendia. Formations pratiques, certifiantes et accessibles à tous.",
+  metadataBase: new URL("https://apprendia.vercel.app"),
+  openGraph: {
+    title: "Apprendia — Formations IA tous niveaux",
+    description: "Des formations pratiques pour comprendre, utiliser et créer avec l'IA — du débutant à l'expert.",
+    url: "https://apprendia.vercel.app",
+    siteName: "Apprendia",
+    locale: "fr_FR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Apprendia — Formations IA tous niveaux",
+    description: "Des formations pratiques pour apprendre l'IA de zéro à expert.",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
