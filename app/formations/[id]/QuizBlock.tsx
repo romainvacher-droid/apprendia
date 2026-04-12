@@ -9,7 +9,13 @@ interface QuizQuestion {
   explanation: string;
 }
 
-export default function QuizBlock({ questions }: { questions: QuizQuestion[] }) {
+export default function QuizBlock({
+  questions,
+  courseId,
+}: {
+  questions: QuizQuestion[];
+  courseId: number;
+}) {
   const [selected, setSelected] = useState<(string | null)[]>(
     Array(questions.length).fill(null)
   );
@@ -23,6 +29,16 @@ export default function QuizBlock({ questions }: { questions: QuizQuestion[] }) 
   function pick(qIdx: number, choice: string) {
     if (submitted) return;
     setSelected((prev) => prev.map((v, i) => (i === qIdx ? choice : v)));
+  }
+
+  async function submit() {
+    const s = selected.filter((a, i) => a?.startsWith(questions[i].answer)).length;
+    setSubmitted(true);
+    await fetch("/api/progress/quiz", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ courseId, score: s, total: questions.length }),
+    }).catch(() => {});
   }
 
   function reset() {
@@ -119,7 +135,7 @@ export default function QuizBlock({ questions }: { questions: QuizQuestion[] }) 
       {/* Bouton valider */}
       {!submitted && (
         <button
-          onClick={() => setSubmitted(true)}
+          onClick={submit}
           disabled={!allAnswered}
           className={`mt-6 w-full py-2.5 rounded-xl text-sm font-semibold transition-colors ${
             allAnswered

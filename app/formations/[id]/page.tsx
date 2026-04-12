@@ -49,15 +49,29 @@ export default async function FormationPage({
   const course = COURSES.find((c) => c.id === courseId);
   if (!course) notFound();
 
+  const session = await getServerSession(authOptions);
+
   // Contrôle d'accès pour les formations premium
   if (!course.free) {
-    const session = await getServerSession(authOptions);
     if (!session) redirect(`/login?from=/formations/${id}`);
     const isPremium = (session.user as { isPremium?: boolean })?.isPremium;
     if (!isPremium) redirect(`/formations?upgrade=1`);
   }
 
   const content = getCourseContent(courseId);
+
+  // Tracker la visite si connecté
+  if (session) {
+    const userId = Number((session.user as { id?: string }).id);
+    if (userId) {
+      const { sql } = await import("@/lib/db");
+      await sql`
+        INSERT INTO course_progress (user_id, course_id)
+        VALUES (${userId}, ${courseId})
+        ON CONFLICT (user_id, course_id) DO NOTHING
+      `.catch(() => {});
+    }
+  }
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-12">
@@ -142,7 +156,7 @@ export default async function FormationPage({
 
           {/* Quiz */}
           {content.quiz && content.quiz.length > 0 && (
-            <QuizBlock questions={content.quiz} />
+            <QuizBlock questions={content.quiz} courseId={courseId} />
           )}
         </>
       )}

@@ -67,10 +67,16 @@ function AccountContent() {
           </div>
         )}
       </div>
-      <button onClick={() => signOut({ callbackUrl: "/" })}
-        className="text-sm text-gray-400 hover:text-gray-600 transition-colors">
-        Se déconnecter
-      </button>
+      <div className="flex items-center justify-between">
+        <a href="/dashboard"
+          className="text-sm text-indigo-600 hover:text-indigo-800 transition-colors font-medium">
+          📊 Mon parcours →
+        </a>
+        <button onClick={() => signOut({ callbackUrl: "/" })}
+          className="text-sm text-gray-400 hover:text-gray-600 transition-colors">
+          Se déconnecter
+        </button>
+      </div>
     </main>
   );
 }
