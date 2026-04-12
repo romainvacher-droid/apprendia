@@ -617,6 +617,15 @@ def cmd_generate_all():
         pushed = git_push(new_files,
                           f"content: generate {len(new_files)} course(s) [{datetime.date.today()}]")
         print(f"\n{len(new_files)} contenu(s) générés — {'push OK' if pushed else 'push échoué'}")
+        courses_done = read_courses()
+        total = len(courses_done)
+        done  = sum(1 for c in courses_done if (CONTENT_DIR / f"{c['id']}.json").exists())
+        telegram(
+            f"✅ *Apprendia — génération terminée*\n"
+            f"{len(new_files)} formation(s) générées et publiées\n"
+            f"Catalogue : {done}/{total} formations disponibles\n"
+            f"{'✅ Déployé sur Vercel' if pushed else '⚠ Push échoué'}"
+        )
     else:
         print("Aucun contenu généré")
 
