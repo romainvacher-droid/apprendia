@@ -127,6 +127,26 @@ export const COURSES: Course[] = [
     free: false,
     emoji: "⚖️",
   },
+  {
+    id: 12,
+    title: "IA et Blockchain : Synergies Futuristes",
+    desc: "Explorez comment l'IA révolutionne les technologies blockchain.",
+    level: "Intermédiaire",
+    duration: "8h",
+    modules: 12,
+    free: false,
+    emoji: "🔗",
+  },
+  {
+    id: 13,
+    title: "Maîtrisez l'IA Quantique",
+    desc: "Découvrez les innovations de l'IA quantique et ses applications.",
+    level: "Avancé",
+    duration: "15h",
+    modules: 18,
+    free: false,
+    emoji: "🧪",
+  },
 ];
 
 // Couleurs par niveau (Tailwind classes)
