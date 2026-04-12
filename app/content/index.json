@@ -1,0 +1,40 @@
+{
+  "updated_at": "2026-04-12T11:19:02.473971",
+  "stats": {
+    "courses": 2,
+    "articles": 1,
+    "total_content": 3
+  },
+  "courses": [
+    {
+      "slug": "apprentissage-automatique-python",
+      "title": "Apprentissage Automatique avec Python",
+      "category": "fondamentaux-ia",
+      "level": "intermédiaire",
+      "summary": "Ce cours couvre les concepts fondamentaux de l'apprentissage automatique et leur implémentation en Python. Les participants apprendront à utiliser les bibliothèques Python pour développer des modèles d'apprentissage automatique et à les appliquer à des problèmes réels.",
+      "duration": 240,
+      "sections": 6,
+      "created_at": "2026-04-12T11:18:59.423757"
+    },
+    {
+      "slug": "fondamentaux-ia-introduction",
+      "title": "Introduction aux Fondamentaux de l'IA",
+      "category": "fondamentaux-ia",
+      "level": "débutant",
+      "summary": "Ce cours présente les bases de l'intelligence artificielle pour les débutants, permettant de comprendre les concepts fondamentaux et les applications de l'IA. Les participants apprendront à distinguer les différents types d'IA et à identifier les domaines où l'IA est appliquée.",
+      "duration": 45,
+      "sections": 6,
+      "created_at": "2026-04-12T11:18:50.977461"
+    }
+  ],
+  "articles": [
+    {
+      "slug": "actualite-ia",
+      "title": "Les Dernières Avancées en IA : Une Revue de l'Actualité",
+      "topic": "Actualité IA",
+      "type": "actualité",
+      "word_count": 585,
+      "created_at": "2026-04-12T11:19:02.472762"
+    }
+  ]
+}
