@@ -11,9 +11,9 @@ export default function Formations() {
   const isPremium = (session?.user as { isPremium?: boolean })?.isPremium;
 
   const handleAction = async (course: typeof COURSES[0]) => {
-    if (course.free) { alert("Contenu gratuit — bientôt disponible !"); return; }
-    if (!session) { router.push("/register"); return; }
-    if (isPremium) { alert("Contenu premium — bientôt disponible !"); return; }
+    if (course.free) { router.push(`/formations/${course.id}`); return; }
+    if (!session) { router.push(`/register?from=/formations/${course.id}`); return; }
+    if (isPremium) { router.push(`/formations/${course.id}`); return; }
     setLoadingId(course.id);
     const res = await fetch("/api/stripe/checkout", { method: "POST" });
     const { url, error } = await res.json();
