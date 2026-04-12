@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-04-12T11:19:02.473971",
+  "updated_at": "2026-04-12T11:44:03.086197",
   "stats": {
-    "courses": 2,
+    "courses": 4,
     "articles": 1,
-    "total_content": 3
+    "total_content": 5
   },
   "courses": [
     {
@@ -25,6 +25,26 @@
       "duration": 45,
       "sections": 6,
       "created_at": "2026-04-12T11:18:50.977461"
+    },
+    {
+      "slug": "premier-agent-ia-python",
+      "title": "Créer son Premier Agent IA avec Python",
+      "category": "agents-autonomes",
+      "level": "intermédiaire",
+      "summary": "Ce cours vous guide dans la création de votre premier agent IA avec Python, en utilisant la boucle ReAct et en intégrant des outils tels que les mémoires courtes et les APIs LLM. Vous apprendrez à développer un agent autonome capable de prendre des décisions basées sur son environnement.",
+      "duration": 120,
+      "sections": 6,
+      "created_at": "2026-04-12T11:35:30.578692"
+    },
+    {
+      "slug": "prompt-engineering-llm",
+      "title": "Prompt Engineering : Maîtriser les Instructions LLM",
+      "category": "llm-et-prompting",
+      "level": "intermédiaire",
+      "summary": "Ce cours couvre les techniques pratiques de prompting pour les modèles de langage LLM, permettant aux apprenants de maîtriser les instructions pour obtenir des résultats précis et efficaces. Les apprenants découvriront les méthodes de zero-shot, few-shot, chain-of-thought, les sorties structurées et les personas pour améliorer leur utilisation des LLM.",
+      "duration": 120,
+      "sections": 6,
+      "created_at": "2026-04-12T11:30:25.521018"
     }
   ],
   "articles": [
