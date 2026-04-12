@@ -16,7 +16,11 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-8 text-sm text-gray-600">
           <Link href="/formations" className="hover:text-gray-900 transition-colors">Formations</Link>
           <Link href="/#niveaux" className="hover:text-gray-900 transition-colors">Niveaux</Link>
-          <Link href="/#tarifs" className="hover:text-gray-900 transition-colors">Tarifs</Link>
+          {session ? (
+            <Link href="/dashboard" className="hover:text-gray-900 transition-colors">Mon parcours</Link>
+          ) : (
+            <Link href="/#tarifs" className="hover:text-gray-900 transition-colors">Tarifs</Link>
+          )}
         </nav>
         <div className="flex items-center gap-3">
           {session ? (
