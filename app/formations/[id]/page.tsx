@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { authOptions } from "@/lib/auth";
 import { COURSES, LEVEL_COLORS } from "@/lib/courses";
+import QuizBlock from "./QuizBlock";
 
 interface Section {
   title: string;
@@ -141,35 +142,7 @@ export default async function FormationPage({
 
           {/* Quiz */}
           {content.quiz && content.quiz.length > 0 && (
-            <div className="border border-gray-100 rounded-2xl p-6 bg-white shadow-sm">
-              <h2 className="font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                <span>🎯</span> Quiz de validation ({content.quiz.length} questions)
-              </h2>
-              <div className="space-y-6">
-                {content.quiz.map((q, i) => (
-                  <div key={i}>
-                    <p className="font-medium text-gray-900 mb-3 text-sm">
-                      {i + 1}. {q.question}
-                    </p>
-                    <ul className="space-y-2 mb-2">
-                      {q.choices.map((choice, j) => (
-                        <li
-                          key={j}
-                          className={`text-sm px-3 py-2 rounded-lg border ${
-                            choice.startsWith(q.answer)
-                              ? "border-green-200 bg-green-50 text-green-800"
-                              : "border-gray-100 text-gray-500"
-                          }`}
-                        >
-                          {choice}
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="text-xs text-gray-400 italic">{q.explanation}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <QuizBlock questions={content.quiz} />
           )}
         </>
       )}
