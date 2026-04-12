@@ -67,7 +67,7 @@ def telegram_send(message: str):
         print(f"  ⚠ Telegram: {e}", file=sys.stderr)
 
 # ── LLM ──────────────────────────────────────────────────────────────────────
-def call_api(url, headers, payload, timeout=90, retries=3):
+def call_api(url, headers, payload, timeout=90, retries=5):
     data = json.dumps(payload).encode()
     req  = urllib.request.Request(
         url, data=data,
@@ -80,7 +80,7 @@ def call_api(url, headers, payload, timeout=90, retries=3):
                 return json.loads(r.read())["choices"][0]["message"]["content"].strip()
         except urllib.error.HTTPError as e:
             if e.code == 429:
-                wait = 12 * (attempt + 1)  # 12s, 24s, 36s
+                wait = 30 * (attempt + 1)  # 30s, 60s, 90s
                 print(f"  ⏳ 429 rate-limit ({url.split('/')[2]}) — attente {wait}s...", flush=True)
                 time.sleep(wait)
                 continue
@@ -113,7 +113,7 @@ def llm(prompt: str, system: str = "", max_tokens: int = 3000, temp: float = 0.7
              "Content-Type": "application/json",
              "HTTP-Referer": "https://ai-academy-hub.com",
              "X-Title": "AI Academy Hub Content Manager"},
-            {"model": "meta-llama/llama-3.1-8b-instruct:free",
+            {"model": "meta-llama/llama-3.3-70b-instruct:free",
              "messages": messages, "max_tokens": max_tokens, "temperature": temp},
         )
         if r: return r
@@ -199,9 +199,10 @@ Format JSON strict :
 {{
   "manques": ["gap1", "gap2", "gap3"],
   "cours_proposés": [
-    {{"titre": "...", "slug": "...", "catégorie": "...", "niveau": "...", "angle": "..."}},
+    {{"titre": "...", "slug": "...", "catégorie": "...", "niveau": "...", "angle": "...", "premium": false}},
     ...
   ],
+  "règle_premium": "Les cours débutants/introduction sont public=false. Les cours intermédiaires et avancés sont premium=true.",
   "articles_proposés": [
     {{"titre": "...", "slug": "...", "sujet": "...", "type": "tutoriel|actualité|concept"}},
     ...
@@ -302,6 +303,7 @@ def build_course(idea: dict) -> pathlib.Path | None:
         })
         # Résumé compact pour le contexte des sections suivantes
         summaries.append(f"{sec['title']} : {' '.join(sec.get('key_points', []))}")
+        time.sleep(4)  # éviter le rate-limit entre sections
 
     # 3. Quiz de fin de cours (3 questions)
     quiz = generate_quiz(outline["title"], summaries)
@@ -311,6 +313,7 @@ def build_course(idea: dict) -> pathlib.Path | None:
         **outline,
         "sections":   filled_sections,
         "quiz":       quiz,
+        "premium":    idea.get("premium", False),
         "created_at": datetime.datetime.now().isoformat(),
         "word_count": sum(len(s["content"].split()) for s in filled_sections),
     }
