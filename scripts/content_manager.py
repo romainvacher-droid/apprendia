@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-content_manager.py — Agent autonome de contenu pour AI Academy Hub
+content_manager.py — Agent autonome de contenu pour Apprendia
 Tourne chaque nuit (cron 1:17). Peut aussi être invoqué par le bot Telegram.
 
 Sources de vérité :
@@ -94,8 +94,8 @@ def llm(prompt, system="", max_tokens=2000):
             "https://openrouter.ai/api/v1/chat/completions",
             {"Authorization": f"Bearer {OPENROUTER_KEY}",
              "Content-Type": "application/json",
-             "HTTP-Referer": "https://ai-academy-hub.vercel.app",
-             "X-Title": "AI Academy Hub"},
+             "HTTP-Referer": "https://apprendia.vercel.app",
+             "X-Title": "Apprendia"},
             {"model": "meta-llama/llama-3.3-70b-instruct:free",
              "messages": messages, "max_tokens": max_tokens, "temperature": 0.65},
         )
@@ -364,7 +364,7 @@ def audit_text() -> str:
 # ── Commandes ─────────────────────────────────────────────────────────────────
 def cmd_full():
     """Cycle nuit : propose 2 nouvelles formations + génère leur contenu."""
-    print("AI Academy Hub — Content Manager (cycle nuit)", flush=True)
+    print("Apprendia — Content Manager (cycle nuit)", flush=True)
     LOGS_DIR.mkdir(exist_ok=True)
 
     txt = audit_text()
@@ -417,7 +417,7 @@ def cmd_full():
         f.write(f"[{datetime.datetime.now().isoformat()}] new_meta={[c['title'] for c in new_meta]} new_content={[p.name for p in new_content]}\n")
 
     telegram(
-        f"🎓 *AI Academy Hub — {datetime.date.today().strftime('%d/%m/%Y')}*\n\n" +
+        f"🎓 *Apprendia — {datetime.date.today().strftime('%d/%m/%Y')}*\n\n" +
         (f"📋 {len(new_meta)} nouvelle(s) formation(s) ajoutée(s)\n" if new_meta else "") +
         (f"✍️ {len(new_content)} contenu(s) généré(s)\n" if new_content else "") +
         f"📊 Catalogue : {len(all_courses)} formations\n" +
@@ -445,7 +445,7 @@ def cmd_generate(course_id: int):
     telegram(
         f"✍️ *Contenu généré* : {course['title']}\n"
         f"{'✅ Publié' if pushed else '⚠ Push échoué'} — "
-        f"https://ai-academy-hub.vercel.app/formations/{course_id}"
+        f"https://apprendia.vercel.app/formations/{course_id}"
     )
 
 def cmd_generate_all():

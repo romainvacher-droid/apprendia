@@ -1,8 +1,8 @@
 @AGENTS.md
 
-# AI Academy Hub — Guide agent
+# Apprendia — Guide agent
 
-> Production : https://ai-academy-hub.vercel.app
+> Production : https://apprendia.vercel.app
 
 ## Infrastructure
 
@@ -142,7 +142,7 @@ Stockées sur Vercel (ne pas modifier via GitHub secrets) :
 |---|---|
 | `DATABASE_URL` | Neon connection string |
 | `NEXTAUTH_SECRET` | Secret JWT pour les sessions |
-| `NEXTAUTH_URL` | `https://ai-academy-hub.vercel.app` |
+| `NEXTAUTH_URL` | `https://apprendia.vercel.app` |
 | `STRIPE_SECRET_KEY` | Clé secrète Stripe (test: `sk_test_...`) |
 | `STRIPE_PRICE_ID` | `price_1TL6MGHyjQScY8Y4K71H7cV7` |
 | `STRIPE_WEBHOOK_SECRET` | Secret de validation des webhooks Stripe |

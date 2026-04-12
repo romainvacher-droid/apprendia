@@ -11,7 +11,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
           <span className="text-2xl">🧠</span>
-          <span>IA Academy Hub</span>
+          <span>Apprendia</span>
         </Link>
         <nav className="hidden md:flex items-center gap-8 text-sm text-gray-600">
           <Link href="/formations" className="hover:text-gray-900 transition-colors">Formations</Link>
