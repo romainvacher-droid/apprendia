@@ -9,7 +9,7 @@
 | Composant | Détail |
 |---|---|
 | **Hébergement** | Vercel — push sur `main` = déploiement automatique (~1 min) |
-| **Sources** | GitHub : `romainvacher-droid/ai-academy-hub` |
+| **Sources** | GitHub : `romainvacher-droid/apprendia` |
 | **Base de données** | Neon PostgreSQL (`still-mud-52051218`, base `neondb`) |
 | **Auth** | NextAuth v4 — inscription/connexion email+mot de passe |
 | **Paiement** | Stripe Checkout — abonnement 19€/mois (mode test actif) |
