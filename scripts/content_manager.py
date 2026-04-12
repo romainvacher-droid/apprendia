@@ -53,7 +53,7 @@ def telegram(msg: str):
 # ── LLM ──────────────────────────────────────────────────────────────────────
 UA = "Mozilla/5.0"
 
-def call_api(url, headers, payload, retries=5):
+def call_api(url, headers, payload, retries=3):
     data = json.dumps(payload).encode()
     req  = urllib.request.Request(url, data=data,
                                    headers={"User-Agent": UA, **headers}, method="POST")
@@ -66,12 +66,17 @@ def call_api(url, headers, payload, retries=5):
                 wait = 30 * (attempt + 1)
                 print(f"  429 — attente {wait}s...", flush=True)
                 time.sleep(wait)
+            elif e.code in (403, 401):
+                # IP block (Cloudflare) or auth error — inutile de retenter
+                print(f"  Bloqué ({e.code}) — abandon de cette API", flush=True)
+                return None
             else:
-                print(f"  API error: {e}", file=sys.stderr)
+                print(f"  API error {e.code}", file=sys.stderr)
                 return None
         except Exception as e:
             print(f"  Error: {e}", file=sys.stderr)
             return None
+    print(f"  Quota épuisé — abandon de cette API", flush=True)
     return None
 
 def llm(prompt, system="", max_tokens=2000):
