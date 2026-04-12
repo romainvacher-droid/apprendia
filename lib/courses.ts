@@ -107,6 +107,26 @@ export const COURSES: Course[] = [
     free: false,
     emoji: "🚀",
   },
+  {
+    id: 10,
+    title: "IA Générative pour les Créatifs",
+    desc: "Maîtrisez les outils d'IA pour le design et la création artistique",
+    level: "Intermédiaire",
+    duration: "8h",
+    modules: 12,
+    free: false,
+    emoji: "🎨",
+  },
+  {
+    id: 11,
+    title: "Éthique et IA Responsable",
+    desc: "Comprendre les enjeux éthiques et juridiques de l'IA en 2026",
+    level: "Avancé",
+    duration: "15h",
+    modules: 18,
+    free: false,
+    emoji: "⚖️",
+  },
 ];
 
 // Couleurs par niveau (Tailwind classes)
