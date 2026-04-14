@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { sql } from "@/lib/db";
+import { Resend } from "resend";
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,18 +29,34 @@ export async function POST(req: NextRequest) {
 
       const resetLink = `${process.env.NEXTAUTH_URL ?? "https://apprendia.vercel.app"}/reset-password?token=${token}`;
 
-      // TODO : envoyer l'email avec resetLink via Resend ou autre provider
-      // Exemple avec Resend :
-      // await resend.emails.send({
-      //   from: "noreply@apprendia.vercel.app",
-      //   to: email,
-      //   subject: "Réinitialisation de votre mot de passe Apprendia",
-      //   html: `<p>Cliquez sur ce lien pour réinitialiser votre mot de passe (valable 1h) :</p>
-      //          <a href="${resetLink}">${resetLink}</a>`,
-      // });
-
-      // En développement : log du lien dans la console
-      if (process.env.NODE_ENV !== "production") {
+      if (process.env.RESEND_API_KEY) {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+          from: "Apprendia <noreply@apprendia.vercel.app>",
+          to: email,
+          subject: "Réinitialisation de votre mot de passe Apprendia",
+          html: `
+            <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px;">
+              <h2 style="color: #1e293b; margin-bottom: 8px;">Réinitialisation de mot de passe</h2>
+              <p style="color: #475569; margin-bottom: 24px;">
+                Vous avez demandé à réinitialiser votre mot de passe Apprendia.
+                Cliquez sur le bouton ci-dessous — ce lien est valable <strong>1 heure</strong>.
+              </p>
+              <a href="${resetLink}" style="display: inline-block; background: #4f46e5; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600;">
+                Réinitialiser mon mot de passe
+              </a>
+              <p style="color: #94a3b8; font-size: 13px; margin-top: 24px;">
+                Si vous n'avez pas fait cette demande, ignorez cet email.
+                Votre mot de passe ne sera pas modifié.
+              </p>
+              <p style="color: #cbd5e1; font-size: 12px; margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+                Apprendia · <a href="https://apprendia.vercel.app" style="color: #a5b4fc;">apprendia.vercel.app</a>
+              </p>
+            </div>
+          `,
+        });
+      } else {
+        // En développement sans clé Resend : log du lien dans la console
         console.log(`[DEV] Lien de réinitialisation pour ${email} : ${resetLink}`);
       }
     }
