@@ -19,9 +19,14 @@ CREATE INDEX IF NOT EXISTS idx_quiz_results_user_completed
     ON quiz_results(user_id, completed_at DESC);
 
 -- 5. Unicité stripe_subscription_id (requis par ON CONFLICT)
-ALTER TABLE subscriptions
-    ADD CONSTRAINT IF NOT EXISTS uq_stripe_subscription_id
-    UNIQUE (stripe_subscription_id);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'uq_stripe_subscription_id'
+  ) THEN
+    ALTER TABLE subscriptions ADD CONSTRAINT uq_stripe_subscription_id UNIQUE (stripe_subscription_id);
+  END IF;
+END$$;
 
 -- 6. Index sur subscriptions.user_id pour les jointures
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id

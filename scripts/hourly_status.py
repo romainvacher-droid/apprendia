@@ -111,6 +111,9 @@ def any_task_active() -> bool:
     return False
 
 if __name__ == "__main__":
-    report = build_report()
-    telegram(report)
-    print(report)
+    if any_task_active():
+        report = build_report()
+        telegram(report)
+        print(report)
+    else:
+        print("Aucune tâche active — rapport non envoyé.")

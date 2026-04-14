@@ -73,12 +73,12 @@ export default async function FormationPage({
 }) {
   const { id } = await params;
   const courseId = parseInt(id, 10);
-  const course = COURSES.find((c) => c.id === courseId);
-  if (!course) notFound();
+  const courseIndex = COURSES.findIndex((c) => c.id === courseId);
+  if (courseIndex === -1) notFound();
+  const course = COURSES[courseIndex];
 
   const session = await getServerSession(authOptions);
 
-  // Contrôle d'accès pour les formations premium
   if (!course.free) {
     if (!session) redirect(`/login?from=/formations/${id}`);
     const isPremium = (session.user as { isPremium?: boolean })?.isPremium;
@@ -87,13 +87,14 @@ export default async function FormationPage({
 
   const content = getCourseContent(courseId);
 
-  // Le tracking de visite est géré côté client par <TrackProgress>
-  // (évite les effets de bord dans un Server Component)
+  // Navigation précédent / suivant
+  const prevCourse = courseIndex > 0 ? COURSES[courseIndex - 1] : null;
+  const nextCourse = courseIndex < COURSES.length - 1 ? COURSES[courseIndex + 1] : null;
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-12">
-      {/* Tracking visite côté client — sans effet de bord dans le Server Component */}
       <TrackProgress courseId={courseId} />
+
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-gray-400 mb-8">
         <Link href="/formations" className="hover:text-gray-600 transition-colors">
@@ -121,10 +122,42 @@ export default async function FormationPage({
         <div className="flex items-center gap-4 mt-4 text-sm text-gray-400">
           <span>⏱ {course.duration}</span>
           <span>📦 {course.modules} modules</span>
+          {content && <span>📝 {content.sections.length} sections</span>}
         </div>
       </div>
 
-      {/* Pas encore de contenu généré */}
+      {/* Table des matières */}
+      {content && content.sections.length > 0 && (
+        <details className="mb-10 border border-gray-100 rounded-2xl overflow-hidden group">
+          <summary className="px-5 py-4 cursor-pointer text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-between list-none select-none">
+            <span>📋 Table des matières — {content.sections.length} sections</span>
+            <span className="text-gray-400 text-xs group-open:hidden">Afficher ↓</span>
+            <span className="text-gray-400 text-xs hidden group-open:inline">Masquer ↑</span>
+          </summary>
+          <ol className="px-5 py-4 space-y-2 border-t border-gray-100 bg-gray-50/50">
+            {content.sections.map((s, i) => (
+              <li key={i}>
+                <a href={`#section-${i}`} className="text-sm text-indigo-600 hover:underline flex items-center gap-2">
+                  <span className="text-gray-400 font-mono text-xs w-6 shrink-0">
+                    {String(i + 1).padStart(2, "0")}.
+                  </span>
+                  {s.title}
+                </a>
+              </li>
+            ))}
+            {content.quiz && content.quiz.length > 0 && (
+              <li>
+                <a href="#quiz" className="text-sm text-indigo-600 hover:underline flex items-center gap-2">
+                  <span className="text-gray-400 font-mono text-xs w-6 shrink-0">🎯</span>
+                  Quiz de validation
+                </a>
+              </li>
+            )}
+          </ol>
+        </details>
+      )}
+
+      {/* Contenu en génération */}
       {!content && (
         <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-8 text-center">
           <div className="text-3xl mb-3">🔄</div>
@@ -135,34 +168,36 @@ export default async function FormationPage({
         </div>
       )}
 
-      {/* Contenu du cours */}
+      {/* Sections */}
       {content && (
         <>
-          <div className="space-y-10 mb-14">
+          <div className="space-y-12 mb-14">
             {content.sections.map((section, i) => (
-              <div key={i} className="border-l-2 border-indigo-100 pl-6">
-                <h2 className="font-semibold text-gray-900 mb-3 text-lg">
-                  <span className="text-indigo-300 font-normal mr-2 text-sm">
-                    {String(i + 1).padStart(2, "0")}.
+              <div key={i} id={`section-${i}`} className="border-l-2 border-indigo-100 pl-6 scroll-mt-24">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-xs font-mono text-indigo-300">
+                    {String(i + 1).padStart(2, "0")} / {content.sections.length}
                   </span>
+                </div>
+                <h2 className="font-semibold text-gray-900 mb-4 text-xl leading-snug">
                   {section.title}
                 </h2>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {section.content.split("\n\n").map((para, j) => (
-                    <p key={j} className="text-gray-600 leading-relaxed text-sm">
+                    <p key={j} className="text-gray-600 leading-relaxed text-base">
                       {para}
                     </p>
                   ))}
                 </div>
                 {section.key_points && section.key_points.length > 0 && (
-                  <div className="mt-4 bg-gray-50 rounded-xl p-4">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+                  <div className="mt-6 bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+                    <p className="text-xs font-semibold text-indigo-400 uppercase tracking-wide mb-3">
                       À retenir
                     </p>
-                    <ul className="space-y-1">
+                    <ul className="space-y-2">
                       {section.key_points.map((kp, k) => (
-                        <li key={k} className="text-sm text-gray-600 flex items-start gap-2">
-                          <span className="text-indigo-400 shrink-0 mt-0.5">✓</span>
+                        <li key={k} className="text-sm text-gray-700 flex items-start gap-2">
+                          <span className="text-indigo-400 shrink-0 mt-0.5 font-bold">✓</span>
                           {kp}
                         </li>
                       ))}
@@ -175,19 +210,47 @@ export default async function FormationPage({
 
           {/* Quiz */}
           {content.quiz && content.quiz.length > 0 && (
-            <QuizBlock questions={content.quiz} courseId={courseId} />
+            <div id="quiz" className="scroll-mt-24">
+              <QuizBlock questions={content.quiz} courseId={courseId} />
+            </div>
           )}
         </>
       )}
 
-      {/* Retour */}
-      <div className="mt-12 pt-8 border-t border-gray-100">
-        <Link
-          href="/formations"
-          className="text-sm text-gray-400 hover:text-gray-700 transition-colors"
-        >
-          ← Retour aux formations
-        </Link>
+      {/* Navigation précédent / suivant */}
+      <div className="mt-12 pt-8 border-t border-gray-100 flex items-center justify-between gap-4">
+        <div>
+          {prevCourse ? (
+            <Link
+              href={`/formations/${prevCourse.id}`}
+              className="group flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 transition-colors"
+            >
+              <span className="group-hover:-translate-x-0.5 transition-transform">←</span>
+              <div>
+                <p className="text-xs text-gray-300">Précédent</p>
+                <p className="font-medium text-gray-600 group-hover:text-gray-900 transition-colors">{prevCourse.title}</p>
+              </div>
+            </Link>
+          ) : (
+            <Link href="/formations" className="text-sm text-gray-400 hover:text-gray-700 transition-colors">
+              ← Retour aux formations
+            </Link>
+          )}
+        </div>
+        <div className="text-right">
+          {nextCourse && (
+            <Link
+              href={`/formations/${nextCourse.id}`}
+              className="group flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 transition-colors"
+            >
+              <div>
+                <p className="text-xs text-gray-300 text-right">Suivant</p>
+                <p className="font-medium text-gray-600 group-hover:text-gray-900 transition-colors">{nextCourse.title}</p>
+              </div>
+              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+            </Link>
+          )}
+        </div>
       </div>
     </main>
   );

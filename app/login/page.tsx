@@ -1,11 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const params = useSearchParams();
+  const from = params.get("from") ?? "/formations";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,7 +21,7 @@ export default function LoginPage() {
     const res = await signIn("credentials", { email, password, redirect: false });
     setLoading(false);
     if (res?.error) setError("Email ou mot de passe incorrect");
-    else router.push("/formations");
+    else router.push(from);
   };
 
   return (
@@ -37,7 +40,12 @@ export default function LoginPage() {
               className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Mot de passe</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-sm font-medium text-gray-700">Mot de passe</label>
+              <Link href="/forgot-password" className="text-xs text-indigo-600 hover:underline">
+                Mot de passe oublié ?
+              </Link>
+            </div>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required
               className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
@@ -48,9 +56,17 @@ export default function LoginPage() {
         </form>
         <p className="text-center text-sm text-gray-500 mt-6">
           Pas encore de compte ?{" "}
-          <Link href="/register" className="text-indigo-600 font-medium hover:underline">Créer un compte</Link>
+          <Link href={`/register${from !== "/formations" ? `?from=${from}` : ""}`} className="text-indigo-600 font-medium hover:underline">Créer un compte</Link>
         </p>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
   );
 }

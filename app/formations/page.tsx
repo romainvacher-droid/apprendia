@@ -36,17 +36,28 @@ export default function Formations() {
         {COURSES.map((c) => {
           const locked = !c.free && !isPremium;
           return (
-            <div key={c.id} className={`border rounded-2xl p-6 flex flex-col bg-white transition-shadow ${locked ? "border-gray-100 opacity-90" : "border-gray-100 hover:shadow-md"}`}>
-              <div className="text-3xl mb-4">{locked ? "🔒" : c.emoji}</div>
+            <div key={c.id} className={`border rounded-2xl p-6 flex flex-col transition-all ${
+              locked
+                ? "border-gray-100 bg-gray-50/50 hover:shadow-sm"
+                : "border-gray-100 bg-white hover:shadow-md"
+            }`}>
+              <div className="flex items-center gap-3 mb-3">
+                <span className={`text-3xl ${locked ? "grayscale opacity-50" : ""}`}>{c.emoji}</span>
+                {locked && (
+                  <span className="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                    🔒 Premium requis
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-2 mb-3">
                 <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${LEVEL_COLORS[c.level]}`}>{c.level}</span>
                 {c.free
                   ? <span className="text-xs text-green-600 font-medium bg-green-50 px-2.5 py-1 rounded-full">Gratuit</span>
                   : <span className="text-xs text-gray-400">Premium</span>}
               </div>
-              <h2 className="font-semibold text-gray-900 mb-2 text-lg">{c.title}</h2>
+              <h2 className={`font-semibold mb-2 text-lg ${locked ? "text-gray-500" : "text-gray-900"}`}>{c.title}</h2>
               <p className="text-sm text-gray-500 flex-1 leading-relaxed">{c.desc}</p>
-              <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between">
+              <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
                 <div className="text-xs text-gray-400 flex gap-3">
                   <span>⏱ {c.duration}</span>
                   <span>📦 {c.modules} modules</span>
@@ -66,8 +77,8 @@ export default function Formations() {
       {!isPremium && (
         <div className="mt-16 bg-indigo-600 rounded-3xl p-10 text-white text-center">
           <h2 className="text-2xl font-bold mb-3">Accédez à tout le catalogue</h2>
-          <p className="text-indigo-200 mb-6 max-w-md mx-auto">Débloquez les 6 formations avancées, les mises à jour et les nouveaux modules chaque mois.</p>
-          <button onClick={() => handleAction(COURSES[3])}
+          <p className="text-indigo-200 mb-6 max-w-md mx-auto">Débloquez les 12 formations avancées, les mises à jour et les nouveaux modules chaque mois.</p>
+          <button onClick={() => handleAction(COURSES.find(c => !c.free)!)}
             className="bg-white text-indigo-600 px-8 py-3 rounded-full font-medium hover:bg-indigo-50 transition-colors">
             Premium — 19€/mois
           </button>
