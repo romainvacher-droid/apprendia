@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       if (process.env.RESEND_API_KEY) {
         const resend = new Resend(process.env.RESEND_API_KEY);
         await resend.emails.send({
-          from: "Apprendia <noreply@apprendia.vercel.app>",
+          from: "Apprendia <onboarding@resend.dev>",
           to: email,
           subject: "Réinitialisation de votre mot de passe Apprendia",
           html: `
