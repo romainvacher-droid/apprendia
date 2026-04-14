@@ -167,6 +167,26 @@ export const COURSES: Course[] = [
     free: false,
     emoji: "🛠️",
   },
+  {
+    id: 16,
+    title: "IA Quantique : La Next-Gen",
+    desc: "Découvrez les bases de l'IA quantique et ses applications révolutionnaires",
+    level: "Intermédiaire",
+    duration: "8h",
+    modules: 12,
+    free: false,
+    emoji: "⚛️",
+  },
+  {
+    id: 17,
+    title: "Agents IA Collaboratifs",
+    desc: "Construisez des systèmes multi-agents pour résoudre des problèmes complexes",
+    level: "Avancé",
+    duration: "14h",
+    modules: 18,
+    free: false,
+    emoji: "🤖",
+  },
 ];
 
 // Couleurs par niveau (Tailwind classes)
