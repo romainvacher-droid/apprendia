@@ -187,6 +187,26 @@ export const COURSES: Course[] = [
     free: false,
     emoji: "🤖",
   },
+  {
+    id: 18,
+    title: "IA pour la Santé : Diagnostic Avancé",
+    desc: "Explorez l'IA en médecine, imagerie et diagnostics automatisés",
+    level: "Avancé",
+    duration: "15h",
+    modules: 20,
+    free: false,
+    emoji: "🏥",
+  },
+  {
+    id: 19,
+    title: "Neuro-Symbolique : Fusion IA & Logique",
+    desc: "Maîtrisez les modèles hybrides pour une IA plus robuste",
+    level: "Intermédiaire",
+    duration: "8h",
+    modules: 12,
+    free: false,
+    emoji: "🧠",
+  },
 ];
 
 // Couleurs par niveau (Tailwind classes)
