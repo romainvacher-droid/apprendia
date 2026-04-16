@@ -207,6 +207,26 @@ export const COURSES: Course[] = [
     free: false,
     emoji: "🧠",
   },
+  {
+    id: 20,
+    title: "IA et Blockchain : Sécurité et Smart Contracts",
+    desc: "Explorez les synergies entre IA et blockchain pour des contrats intelligents sécurisés",
+    level: "Avancé",
+    duration: "18h",
+    modules: 20,
+    free: false,
+    emoji: "🔒",
+  },
+  {
+    id: 21,
+    title: "IA pour la Finance : Trading Algorithmique",
+    desc: "Maîtrisez les modèles prédictifs pour les marchés financiers",
+    level: "Intermédiaire",
+    duration: "8h",
+    modules: 12,
+    free: false,
+    emoji: "📈",
+  },
 ];
 
 // Couleurs par niveau (Tailwind classes)
