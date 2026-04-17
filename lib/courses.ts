@@ -227,6 +227,26 @@ export const COURSES: Course[] = [
     free: false,
     emoji: "📈",
   },
+  {
+    id: 22,
+    title: "IA et Métavers",
+    desc: "Découvrez l'intégration de l'IA dans les mondes virtuels immersifs",
+    level: "Intermédiaire",
+    duration: "8h",
+    modules: 12,
+    free: false,
+    emoji: "🌐",
+  },
+  {
+    id: 23,
+    title: "Agents IA Auto-Supervisés",
+    desc: "Créez des systèmes autonomes capables de s'auto-optimiser",
+    level: "Avancé",
+    duration: "15h",
+    modules: 18,
+    free: false,
+    emoji: "🧠",
+  },
 ];
 
 // Couleurs par niveau (Tailwind classes)
