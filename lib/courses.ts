@@ -247,6 +247,26 @@ export const COURSES: Course[] = [
     free: false,
     emoji: "🧠",
   },
+  {
+    id: 24,
+    title: "IA et IA Générative pour l'Art",
+    desc: "Explorez les outils et techniques pour créer des œuvres d'art avec l'IA",
+    level: "Intermédiaire",
+    duration: "8h",
+    modules: 12,
+    free: false,
+    emoji: "🎨",
+  },
+  {
+    id: 25,
+    title: "IA pour la Cybersécurité",
+    desc: "Découvrez comment l'IA renforce la protection des données et systèmes",
+    level: "Avancé",
+    duration: "15h",
+    modules: 18,
+    free: false,
+    emoji: "🔒",
+  },
 ];
 
 // Couleurs par niveau (Tailwind classes)
